@@ -33,6 +33,17 @@ async function createNewDeck() {
     return await responde.json()
 }
 
+async function shuffleRemainingDecks(deck_id) {
+    const url = `https://deckofcardsapi.com/api/deck/${deck_id}/shuffle/?remaining=true`
+    const response = await fetch(url)
+    return await response.json()
+}
+
+shuffleCardsBtn.addEventListener('click', async () => {
+    const deckOfCards = await createShuffleDeck()
+    await shuffleRemainingDecks(deckOfCards.deck_id)
+})
+
 //Nesse evento de click, o async e await foi adicionado para que o 'display: block' seja adicionado apenas quando o catchingDecks terminar de executar. Caso a API esteja sobrecarregada, o display será modificado somente depois.
 catchCardsBtn.addEventListener('click', async () => {
     await catchingDecks()
@@ -41,5 +52,6 @@ catchCardsBtn.addEventListener('click', async () => {
 
 newDeckOfCardsBtn.addEventListener('click', async () => {
     const newDeck = await createNewDeck()
-    newDeck = cards.forEach(card => card.style.display = 'none')
+    await shuffleRemainingDecks(newDeck.deck_id)
+    cards.forEach(card => card.style.display = 'none')
 })
